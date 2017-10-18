@@ -1,0 +1,124 @@
+include ../../../../default.pug
+include ../aside/aside.pug
+include ../button/button.pug
+include ./inventory-print-page.pug
+
+.inventory-print-section(print-section print-only)
+	+inventory-print-page()(ng-if="showPrintInventory")
+
++b.inventory#inventory(ng-class="{'inventory__fullscreen': fullscreenMode}" ng-cloak)
+	+e.dots( elromco-dots count="2" ng-if="isEmptyAdditionaInventory && !isAccount" current-index="inventoryType" change-index="changeInventoryType")
+	+e.title_left(ng-if="isEmptyAdditionaInventory && !isAccount" ng-class="{'inventory__title_active' : inventoryType == 0 }")
+		h2 Default Inventory
+	+e.title_right(ng-if="isEmptyAdditionaInventory && !isAccount" ng-class="{'inventory__title_active' : inventoryType == 1 }")
+		h2 Additional Inventory
+	+e.inventory(ng-class="{'inventory__inventory_with-dots' : !isAccount && isEmptyAdditionaInventory}")
+		+e.progress
+			md-progress-linear(md-mode="query" ng-show="busy")
+		+e.row
+			+e.toolbar
+				+e.toolbar-item
+					+e('input').search.js-inventory-search#gSearch(placeholder="Search item..."  ng-model="searchText" ng-change="search()")
+				+e.toolbar-item_info(ng-if="total.count")
+					| Total Items:
+					span(ng-bind="total.count")
+				+e.toolbar-item_info(ng-if="calcTotals.boxes")
+					| Total Boxes:
+					span(ng-bind="calcTotals.boxes")
+				+e.toolbar-item_info(ng-if="total.total_custom")
+					| Custom:
+					span(ng-bind="total.total_custom")
+				+e.toolbar-item_info(ng-if="total.total_cf > 0 && !isAccount")
+					| Total Estimated Cubic Feet: {{total.total_cf | number:0 }}
+				+e.toolbar-item_typical-item(ng-if="false && !isPackageSettings")
+					+e('md-button').typical-button.launch(aria-label='typical' ng-if="!request.request_all_data.typicalItemsOn" ng-click="addTypicalItems()") Add typical Items
+					+e('md-button').typical-button.launch(aria-label='typical' ng-if="request.request_all_data.typicalItemsOn" ng-click="removeTypicalitems()") Remove typical Items
+				+e.toolbar-item_print-btn(ng-if="!isPackageSettings")
+					md-button.md-icon-button.launch(aria-label='back' ng-click="print()")
+						ng-md-icon( icon="print" style="fill: #444 " size="24px")
+				+e.toolbar-item_right(ng-if="is_iPad")
+					md-button.md-icon-button.launch(aria-label='back' ng-click="close()")
+						ng-md-icon( icon="close" style="fill: #444 " size="24px")
+
+		+e.row_mobile(ng-show="inventoryType == 0 && !isAccount")
+			+e.selected-room.js-selected-room(ng-class="{ 'inventory__selected-room_clicked': mouseClicked}")
+				+e('md-button').selected-room-arrow_left.md-icon-button(ng-click="openMobileMenu()" )
+					ng-md-icon( icon="menu" style="fill: #444 " size="24px")
+				span(ng-bind="activeRoom.name")
+			+e.menu-wrapper
+				+e.aside-mobile-bg(ng-if="showMobileMenu" ng-click="openMobileMenu()")
+				+e.aside-mobile-bg_white(ng-if="showMobileMenu")
+				+e.wraper-aside_mobile.js-mobile-custom-scrollbar(ng-class="{'inventory__wraper-aside_visible': showMobileMenu}" ng-if="isMobile || is_iPad")
+					+e.aside.js-aside
+						+b.aside-new_full-width(ng-class="{'aside-new__aside-mobile': is_iPad }")
+							+e.wrap-aside.js-aside-wrap-desk
+								+e.nav.js-aside-nav(
+								ng-click="getMyInventory(true)"
+								ng-class="{'aside-new__wrap-aside_state_opened' : myInventory.opened}")
+									+e('img').icon(ng-src="/moveBoard/content/img/icons/room-key.png")
+									+e.title
+										| My Inventory
+										+e.count
+											span(ng-bind="total.count")
+							+e.wrap-aside(ng-repeat="room in rooms track by $id(room)").js-aside-wrap-desk
+								+e.nav.js-aside-nav(ng-click="openRoom(room)" ng-class="{'aside-new__wrap-aside_state_opened' : room.opened}")
+									+e('img').icon(ng-src="{{::room.image_link }}")
+									+e.title
+										span(ng-bind="::room.name")
+										+e.count(ng-bind="room.count")
+								+e.items.js-aside-items(ng-class="{'aside-new__items_state_opened' : room.opened}" ng-if="menuMode == 0")
+									+e(ng-if="room.opened && room.filters")
+										+e('a').link(href=jv0 ng-repeat="item in room.filters track by $id(item)" ng-click="setFilter(item, room.filters)" ng-class="{'aside-new__link_state_active' : item.active}").js-aside-inner.js-aside-item
+											+e.item_flex
+												+e.item-title_absolute(ng-bind="::item.name")
+												+e.count_absolute(ng-bind="item.totals.total_count")
+										+e('a').link(href=jv0 ng-if="!isPackageSettings" ng-click="setCustomItemMode()" ng-class="{'aside-new__link_state_active' : customMode}").js-aside-inner.js-aside-item
+											+e.item_flex
+												+e.item-title
+													span Custom item
+												+e.count(ng-bind="room.total_custom_count")
+		+e.row
+			+e.wraper-aside.js-custom-scrollbar
+				+e.aside(ng-if="!isMobile")
+					+b.aside-new.js-aside
+						+e.wrap-aside.js-aside-wrap-desk
+							+e.nav.js-aside-nav(ng-click="getMyInventory(true)" ng-class="{'aside-new__wrap-aside_state_opened' : myInventory.opened}")
+								+e('img').icon(ng-src="/moveBoard/content/img/icons/room-key.png")
+								+e.title
+									| My Inventory
+									+e.count
+										span(ng-bind="total.count")
+						+e.wrap-aside(ng-repeat="room in rooms track by $id(room)").js-aside-wrap-desk
+							+e.nav.js-aside-nav(ng-click="openRoom(room)" ng-class="{'aside-new__wrap-aside_state_opened' : room.opened}")
+								+e('img').icon(ng-src="{{::room.image_link }}")
+								+e.title
+									span(ng-bind="::room.name")
+									+e.count(ng-bind="room.count")
+							+e.items.js-aside-items(ng-class="{'aside-new__items_state_opened' : room.opened}" ng-if="menuMode == 0")
+								+e(ng-if="room.opened && room.filters")
+									+e('a').link(href=jv0 ng-repeat="item in room.filters track by $id(item)" ng-click="setFilter(item, room.filters)" ng-class="{'aside-new__link_state_active' : item.active}").js-aside-inner.js-aside-item
+										+e.item_flex
+											+e.item-title
+												span(ng-bind="::item.name")
+											+e.count(ng-bind="item.totals.total_count")
+									+e('a').link(href=jv0 ng-if="!isPackageSettings" ng-click="setCustomItemMode()" ng-class="{'aside__link_state_active' : customMode}").js-aside-inner.js-aside-item
+										+e.item_flex
+											+e.item-title
+												span Custom item
+											+e.count(ng-bind="room.total_custom_count")
+
+
+			+e.wraper.js-items-wrapper
+				+e.inventory-items.js-inventory-items(ng-if="!busy")
+					+e('form').item_custom(ng-if="customMode" name="customItemForm" ng-submit="addCustomItem(customItemForm)" data-index="0")
+						input._input(placeholder="Item Name" id="customInventoryName" ng-model="newItem.title.value" name="name" required ng-class="{'error':$invalid}")
+						input._input(placeholder="Count" id="customInventoryCount" ng-model="newItem.count.value" name="count" ng-class="{'error':$invalid}" required elromco-input-pattern="[^0-9]")
+						input._input(placeholder="Cubic ft." id="customInventoryCubic" ng-if="!isAccount" ng-model="newItem.pounds.value" name="cubic" required ng-class="{'error':$invalid}" elromco-input-pattern="[^0-9]")
+						input._input(placeholder="Width.in" id="customInventoryWidth" ng-if="isAccount" ng-model="newItem.width.value" name="width" ng-class="{'error':$invalid}" required elromco-input-pattern="[^0-9]")
+						input._input(placeholder="Height.in" id="customInventoryHeight" ng-if="isAccount" ng-model="newItem.height.value" name="height" required ng-class="{'error':$invalid}" elromco-input-pattern="[^0-9]")
+						input._input(placeholder="Depth.in" id="customInventoryDepth" ng-if="isAccount" ng-model="newItem.depth.value" name="depth" required ng-class="{'error':$invalid}" elromco-input-pattern="[^0-9]")
+						+inventory-button({text: 'Add Item', type: 'submit', margin: '1', ngClick: "customItemForm.$setSubmitted()"})
+
+					+e.item(lazy-repeater="10" lazy-placeholder="{{::inventoryItemPlaceHolder}}" ng-repeat="item in inventoryItems track by $id(item)" data-index="{{ $index }}" ng-class="{'inventory__item_filter': item.type == 0}")
+						+e.visible(new-inventory-item inventory-data="item" filter="item.filter" room="item.room" calc-my-inventory="calcMyInventory()" remove-item="removeItem" request="request" package-id="{{::packageId}}" edit="inventoryType == 0 || baseType == 1" inventory-type="{{ inventoryType }}")
++b(inventory-table="inventory-list" rooms="roomsForList" entity-id="request.nid" column-width="3" ng-if="!isMobile")

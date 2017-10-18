@@ -1,0 +1,15 @@
+div#inventory-list.col-md-12.no-padd
+	div(ng-repeat="room in roomsHolder.rooms | filter:emptyRooms" ng-class="roomClass").inventory-list-room
+		div.col-md-12.inventory-list-room-title
+			div.col-md-9.no-padd.title {{room.name}}
+			div.col-md-3.no-padd.title.total-right Qty.
+		div(ng-repeat="filter in room.filters")
+			div.selected-items-list
+				div(ng-repeat="item in filter.items | filter:emptyItem | orderBy:' - totals.total_cf'").col-md-12.no-padd
+					div(ng-bind-html="item.name | highlight").col-md-9.no-padd
+					div.col-md-3.inv-total.no-padd {{item.totals.total_count}}
+		div
+			div.selected-items-list
+				div(ng-repeat="item in room.customItems | filter:emptyItem").col-md-12.no-padd
+					div(ng-bind-html="item.name | highlight").col-md-9.no-padd
+					div.col-md-3.inventory-item-total.no-padd {{item.totals.total_count}}

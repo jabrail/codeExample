@@ -1,0 +1,32 @@
+mixin inventory-print-page()
+	+b.inventory-print
+		+e.title
+			+e.title-nid Request #
+				span(ng-bind="request.nid")
+			+e.title-label Inventory List
+		+e.total-row
+			+e.total-row-item(ng-if="total.count")
+				| Total Items :
+				span(ng-bind="total.count")
+			+e.total-row-item(ng-if="calcTotals.boxes")
+				| Total Boxes:
+				span(ng-bind="calcTotals.boxes")
+			+e.total-row-item(ng-if="total.total_custom")
+				| Custom:
+				span(ng-bind="total.total_custom")
+			+e.total-row-item(ng-if="total.total_cf > 0 && !isAccount")
+				| Total Estimated Cubic Feet: {{total.total_cf | number:0 }}
+		+e.content-box
+			+e.list-pages(ng-repeat="page in printPages.pages track by $id(page)" ng-class='printPages.pagesClass[$index]')
+				+e.list-rooms(ng-repeat="room in page track by $id(room)")
+					+e.inv-result(ng-show='room.items.length')
+						+e.inv-result-title
+							span(ng-bind="room.name")
+						+e.inv-result-title-right
+							span(ng-show='room.name') Qty.
+					+e.selected-items-list
+						+e.inv_item(ng-repeat="item in room.items track by $id(item)")
+							+e.inv-title-items
+								span(ng-bind="item.name")
+							+e.inv-total
+								span(ng-bind="item.totals.total_count")

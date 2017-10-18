@@ -1,0 +1,95 @@
+.new-inventory-item
+	background #fff
+	padding 2px
+	padding-top 8px
+	width 100%
+	height 170px
+	opacity 0
+	animation: new-inventory-item-show 0.5s forwards ease-out
+
+	&_custom
+		padding 0
+	&__visible
+		position relative
+	&__extraservice
+		display none
+		width 123px
+		height 30px
+		background #bf2621
+		position absolute
+		left -40px
+		top 0
+		transform rotate(-45deg)
+		font-size 11px
+		text-align center
+		box-shadow 2px 0px 5px 1px #eee
+		color #fff
+	&_filter
+		height 40px
+		padding 10px
+		background #2392BA
+		color #fff
+		text-align center
+		margin-bottom 15px
+
+	&__icon
+		width 25px
+		height 25px
+	&__item
+		width $invWidth
+		height 160px
+
+	&__item-image
+		width 130px
+		min-width 130px
+		height 130px
+		min-height 130px
+		padding 4px
+
+	&__title
+		display block
+		float right
+		width 100%
+		text-align center
+		font-size 15px
+		word-break break-word
+
+		&_custom
+			width 33%
+			font-weight 700
+			height 100%
+			line-height 3.3
+
+		&_name
+			font-weight 700
+			margin-bottom 5px
+	&__col
+		padding 10px
+
+	&__remove
+		float right
+		margin-left 2px
+
+	&__info
+		display flex
+		flex-direction column
+
+		&_custom
+			width 100%
+			flex-direction row
+			height 40px
+			padding 0
+			border-bottom 1px solid #eee
+
+	&__header
+		display flex
+		justify-content space-around
+	&__row
+		width 100%
+
+@keyframes new-inventory-item-show
+	from
+		opacity 0
+
+	to
+		opacity 1

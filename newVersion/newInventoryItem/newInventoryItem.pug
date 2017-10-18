@@ -1,0 +1,45 @@
+include ../../../../../default.pug
+include ../../aside/aside.pug
+include ../../button/button.pug
+
+
++b.new-inventory-item(ng-class="{'new-inventory-item_filter': item.type == 0}")
+
+	+e.visible
+		+e.title(ng-show="::item.type == 0" ng-bind="::item.name")
+		+e.extraservice.js-extraservice(ng-show='!isAccount')
+			| $
+			span(ng-bind="::item.extra_service")
+			br
+			| Extra Service
+		+e.header(ng-show="::item.type == 1")
+			+e('img').item-image(ng-src="{{::item.image_link}}")
+			+e.info
+				+e.title_name(ng-bind="::item.name")
+				+e.title(ng-if='!isAccount')
+					| Cubic feet:
+					span(ng-bind="::item.cf")
+				+e.title(ng-if='false && !isAccount')
+					| Handle fee:
+					span(ng-bind="::item.cf")
+				+e.title(ng-if='false && !isAccount')
+					| Packing fee:
+					span(ng-bind="::item.packing_fee")
+
+		+e.header(ng-show="::item.type == 2")
+			+e('img').item-image(ng-src="{{::item.image_link}}")
+			+e.info
+				+e.title_name(ng-bind="::itemName")
+				+e.title(ng-if='!isAccount')
+					| Cubic feet:
+					span(ng-bind="::item.cf")
+
+		+e.col(ng-show="::item.type != 0")
+			.js-add-button
+				+inventory-button({text: 'Add Item', style: 'transparent'})(data-count="1" ng-disabled="!edit").js-counter
+			+b.counter.js-counter-conteiner.simple-item
+				+e('button').button.js-counter(data-count="-1" ng-disabled="!edit")
+					+e.minus
+				+e('input').input.js-inventory-item-count(type='text' maxlength='4' data-max="1000" ng-disabled="true")
+				+e('button').button.js-counter(data-count="1" ng-disabled="!edit")
+					+e.plus
